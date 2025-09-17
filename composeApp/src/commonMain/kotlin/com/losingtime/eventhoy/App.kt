@@ -57,7 +57,7 @@ fun App(
                             rightState = ToolbarState.RightState.Notification,
                             centerState = ToolbarState.CenterState.None,
                             background = colors.background
-                        ), {}, {})
+                        ), {}, {},{})
                 },
                 bottomBar = {
                     EventhoyNavBar(

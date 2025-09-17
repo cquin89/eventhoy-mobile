@@ -2,6 +2,7 @@ package com.losingtime.eventhoy.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -75,165 +76,140 @@ fun EventhoyToolbar(
     toolbarState: ToolbarState,
     leftClick: (ToolbarState.LeftState) -> Unit = {},
     rightClick: (ToolbarState.RightState) -> Unit = {},
+    onLocationClick: () -> Unit
 ) {
-    Column(
-        Modifier
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
             .background(toolbarState.background)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .height(70.dp)
-                .padding(horizontal = 24.dp),
+            .statusBarsPadding()
+            .height(70.dp)
+            .padding(horizontal = 24.dp),
 
-            ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.align(Alignment.CenterStart)
-            ) {
-                when (toolbarState.leftState) {
-                    ToolbarState.LeftState.Back -> {
-                        Icon(
-                            painter = painterResource(Res.drawable.arrow_left_rectangle),
-                            contentDescription = "Back",
-                            tint = colors.text,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable { leftClick.invoke(ToolbarState.LeftState.Back) }
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                    }
-
-                    ToolbarState.LeftState.None -> Unit
-
-                    is ToolbarState.LeftState.Profile -> {
-                        ProfileBar()
-                    }
+        ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.align(Alignment.CenterStart)
+        ) {
+            when (toolbarState.leftState) {
+                ToolbarState.LeftState.Back -> {
+                    Icon(
+                        painter = painterResource(Res.drawable.arrow_left_rectangle),
+                        contentDescription = "Back",
+                        tint = colors.text,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { leftClick.invoke(ToolbarState.LeftState.Back) }
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
                 }
-            }
 
-            when (toolbarState.centerState) {
-                ToolbarState.CenterState.None -> Unit
-                is ToolbarState.CenterState.Title -> {
-                    Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        text = toolbarState.centerState.text,
-                        style = eventhoyTypo().title,
-                        color = colors.text
+                ToolbarState.LeftState.None -> Unit
+
+                is ToolbarState.LeftState.Profile -> {
+
+                    ProfileBar(
+                        location = toolbarState.leftState.location,
+                        onLocationClick
                     )
                 }
 
             }
+        }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) {
-                when (toolbarState.rightState) {
-                    ToolbarState.RightState.Delete -> {
-                        Icon(
-                            painter = painterResource(resource = Res.drawable.location),
-                            contentDescription = "Delete",
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable { rightClick.invoke(ToolbarState.RightState.Delete) }
-                        )
-                    }
 
-                    ToolbarState.RightState.None -> Unit
-
-                    ToolbarState.RightState.Notification -> {
-                        Icon(
-                            painter = painterResource(resource = Res.drawable.notification),
-                            contentDescription = "Notification",
-                            tint = colors.text,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable { rightClick.invoke(ToolbarState.RightState.Notification) }
-                        )
-                    }
-                }
+        when (toolbarState.centerState) {
+            ToolbarState.CenterState.None -> Unit
+            is ToolbarState.CenterState.Title -> {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = toolbarState.centerState.text,
+                    style = eventhoyTypo().title,
+                    color = colors.text
+                )
             }
 
         }
 
-        // Optional: Search bar below toolbar
-        OutlinedTextField(
-            value = "",
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(resource = Res.drawable.search_01),
-                    contentDescription = "Notification",
-                    tint = colors.deactive,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { rightClick.invoke(ToolbarState.RightState.Notification) }
-                )
-            },
-            onValueChange = {},
-            placeholder = {
-                Text(
-                    text = "Buscar Evento",
-                    style = eventhoyTypo().titleM,
-                    color = colors.deactive
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, bottom = 12.dp, top = 6.dp),
-            singleLine = true,
-            textStyle = eventhoyTypo().titleM
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.align(Alignment.CenterEnd)
+        ) {
+            when (toolbarState.rightState) {
+                ToolbarState.RightState.Delete -> {
+                    Icon(
+                        painter = painterResource(resource = Res.drawable.location),
+                        contentDescription = "Delete",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { rightClick.invoke(ToolbarState.RightState.Delete) }
+                    )
+                }
+
+                ToolbarState.RightState.None -> Unit
+
+                ToolbarState.RightState.Notification -> {
+                    Icon(
+                        painter = painterResource(resource = Res.drawable.notification),
+                        contentDescription = "Notification",
+                        tint = colors.text,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { rightClick.invoke(ToolbarState.RightState.Notification) }
+                    )
+                }
+            }
+        }
+
     }
-
-
 }
 
 @Composable
-private fun ProfileBar() {
+private fun ProfileBar(location: String, onLocationClick: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(
-            contentScale = ContentScale.FillBounds,
-            error = painterResource(Res.drawable.img),
-            model = "https://www.dzoom.org.es/wp-content/uploads/2020/02/portada-foto-perfil-redes-sociales-consejos.jpg",
-            contentDescription = "Profile",
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painterResource(Res.drawable.location),
-                    contentDescription = null,
-                    tint = colors.body,
-                    modifier = Modifier.padding(end = 8.dp).size(16.dp)
-                )
-                Text(
-                    "Location",
-                    style = eventhoyTypo().titleS,
-                    color = colors.body
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                "Los Angeles",
-                style = eventhoyTypo().title,
-                fontWeight = FontWeight.Bold,
-                color = colors.text
-            )
-
-
-        }
-        Spacer(modifier = Modifier.width(8.dp))
         Icon(
-            painterResource(Res.drawable.down_arrow),
+            painterResource(Res.drawable.location),
             contentDescription = null,
             tint = colors.text,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(40.dp)
+                .border(
+                    width = 2.dp,             // grosor de la línea
+                    color = colors.body,        // color de la línea
+                    shape = CircleShape       // forma circular
+                )
+                .padding(10.dp)
         )
+        Spacer(modifier = Modifier.width(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
+            onLocationClick.invoke()
+        }) {
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                    Text(
+                        "Ubicacion",
+                        style = eventhoyTypo().titleS,
+                        color = colors.body
+                    )
+                }
+                Text(
+                    location,
+                    style = eventhoyTypo().title,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.text
+                )
+
+
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                painterResource(Res.drawable.down_arrow),
+                contentDescription = null,
+                tint = colors.text,
+                modifier = Modifier.size(16.dp)
+            )
+        }
     }
 }
 
@@ -247,7 +223,7 @@ fun ToolbarDarkThemePreview() {
                 rightState = ToolbarState.RightState.Notification,
                 centerState = ToolbarState.CenterState.None,
                 background = colors.background
-            ), {}, {})
+            ), {}, {}, {})
     }
 
 }
@@ -262,12 +238,27 @@ fun ToolbarLightThemePreview() {
                 leftState = ToolbarState.LeftState.Profile("", "Santiago"),
                 rightState = ToolbarState.RightState.Notification,
                 centerState = ToolbarState.CenterState.None,
-                background = MaterialTheme.colorScheme.background
-            ), {}, {})
+                background = colors.background
+            ), {}, {}, {})
     }
 
 }
 
+@Composable
+@Preview()
+fun ToolbarWithTitleDarkThemePreview() {
+
+    EventhoyTheme(darkTheme = true) {
+        EventhoyToolbar(
+            toolbarState = ToolbarState(
+                leftState = ToolbarState.LeftState.Back,
+                rightState = ToolbarState.RightState.Notification,
+                centerState = ToolbarState.CenterState.Title("Notificaciones"),
+                background = colors.background
+            ), {}, {}, {})
+    }
+
+}
 
 @Composable
 @Preview()
@@ -279,8 +270,9 @@ fun ToolbarWithTitleLightThemePreview() {
                 leftState = ToolbarState.LeftState.Back,
                 rightState = ToolbarState.RightState.Notification,
                 centerState = ToolbarState.CenterState.Title("Notificaciones"),
-                background = Color.White
-            ), {}, {})
+                background = colors.background
+            ), {}, {}, {})
     }
 
 }
+
