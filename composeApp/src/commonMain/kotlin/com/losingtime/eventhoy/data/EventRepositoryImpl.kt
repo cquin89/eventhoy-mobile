@@ -6,7 +6,7 @@ import com.losingtime.eventhoy.domain.entity.Category
 import com.losingtime.eventhoy.domain.entity.Event
 import com.losingtime.eventhoy.domain.entity.PaginatedResult
 
-class EventRepositoryImpl : EventRepository {
+class EventRepositoryImpl(private val apiService: ApiService) : EventRepository {
     override suspend fun getEvents(
         page: Int,
         pageSize: Int,
@@ -35,7 +35,7 @@ class EventRepositoryImpl : EventRepository {
     }
 
     override suspend fun getCategories(): Result<List<Category>> {
-        return ApiService().getCategories()
+        return apiService.getCategories()
     }
 
 

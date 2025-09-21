@@ -2,21 +2,19 @@ package com.losingtime.eventhoy.presentation.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.losingtime.eventhoy.data.EventRepositoryImpl
 import com.losingtime.eventhoy.domain.usecase.GetCategoriesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(private val getCategoriesUseCase: GetCategoriesUseCase) : ViewModel() {
 
-    private val getCategoriesUseCase = GetCategoriesUseCase(EventRepositoryImpl())
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-       loadCategories()
+        loadCategories()
     }
 
     private fun loadCategories() {
